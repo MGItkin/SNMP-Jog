@@ -3,22 +3,13 @@
 #include <string.h>
 #include <stdio.h>
 
-/* change the word "define" to "undef" to try the (insecure) SNMPv1 version */
-#undef DEMO_USE_SNMP_VERSION_3
-
-#ifdef DEMO_USE_SNMP_VERSION_3
-const char *our_v3_passphrase = "The Net-SNMP Demo Password";
-#endif
-
 // Globals for Session and Response
 netsnmp_session session, *ss; // holds connection info.
 netsnmp_pdu *response; // holds info. that the remote host sends back
 
 void getNext_pdu(char* desc);
 
-int main(int argc, char ** argv)
-{
-
+int main(int argc, char ** argv) {
     char* mibVar[25];
 
     printf("CS 158B Assignment#2  (Mason & Kenny):\n\n");    
@@ -37,50 +28,12 @@ int main(int argc, char ** argv)
     // 127.0.0.1:161
 
     /* set up the authentication parameters for talking to the server */
-
-#ifdef DEMO_USE_SNMP_VERSION_3  // NOT USING THIS DEF (SNMP V1 Instead)
-
-    /* Use SNMPv3 to talk to the experimental server */
-
-    /* set the SNMP version number */
-    session.version=SNMP_VERSION_3;
-        
-    /* set the SNMPv3 user name */
-    session.securityName = strdup("MD5User");
-    session.securityNameLen = strlen(session.securityName);
-
-    /* set the security level to authenticated, but not encrypted */
-    session.securityLevel = SNMP_SEC_LEVEL_AUTHNOPRIV;
-
-    /* set the authentication method to MD5 */
-    session.securityAuthProto = usmHMACMD5AuthProtocol;
-    session.securityAuthProtoLen = sizeof(usmHMACMD5AuthProtocol)/sizeof(oid);
-    session.securityAuthKeyLen = USM_AUTH_KU_LEN;
-
-    /* set the authentication key to a MD5 hashed version of our
-       passphrase "The Net-SNMP Demo Password" (which must be at least 8
-       characters long) */
-    if (generate_Ku(session.securityAuthProto,
-                    session.securityAuthProtoLen,
-                    (u_char *) our_v3_passphrase, strlen(our_v3_passphrase),
-                    session.securityAuthKey,
-                    &session.securityAuthKeyLen) != SNMPERR_SUCCESS) {
-        snmp_perror(argv[0]);
-        snmp_log(LOG_ERR,
-                 "Error generating Ku from authentication pass phrase. \n");
-        exit(1);
-    }
-    
-#else /* we'll use the insecure (more simple) SNMPv1 */ 
-
     /* set the SNMP version number */
     session.version = SNMP_VERSION_1;
 
     /* set the SNMPv1 community name used for authentication (NOT SECURE) */
     session.community = "public";
     session.community_len = strlen(session.community);
-
-#endif
 
     /*
      * Open the session
