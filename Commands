@@ -1,0 +1,15 @@
+To BUILD & RUN:
+make app1
+./app1
+
+sudo service snmpd start
+netstat -aunt // Look for open port 161
+snmpwalk -v 1 -c public localhost
+ 
+Commands for the Project (the ifTable descriptor can be found using these
+
+Physically connected Addresses
+snmpwalk -v 1 -c public localhost | grep -i ipNetToMediaPhysAddress
+
+Interface Speed
+snmpwalk -v 1 -c public localhost | grep -i ifHighSpeed
