@@ -85,14 +85,11 @@ int main(int argc, char ** argv)
     /*
      * Open the session
      */
-    SOCK_STARTUP; // Does nothing on UNIX systems (noop - No operation)
-    
     ss = snmp_open(&session);                     /* establish the session */
  
     // If session open fails
     if (!ss) { 
       snmp_sess_perror("ack", &session);
-      SOCK_CLEANUP;
       exit(1);
     }   
 
@@ -117,8 +114,6 @@ int main(int argc, char ** argv)
     // Close the Session
     snmp_close(ss); // (2)
 
-    SOCK_CLEANUP; // NOT needed for UNIX (noop) only for windows32
-    
     return (0);
 } /* main() */
 
@@ -144,7 +139,6 @@ void getNext_pdu(char* desc){
 
     if (!snmp_parse_oid(".1.3.6.1.2.1.1.1.0", anOID, &anOID_len)) { 
       snmp_perror(".1.3.6.1.2.1.1.1.0");
-      SOCK_CLEANUP;
       exit(1); 
     } */
 

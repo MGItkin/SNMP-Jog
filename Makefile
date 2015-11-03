@@ -1,4 +1,3 @@
-#
 # Warning: you may need more libraries than are included here on the
 # build line.  The agent frequently needs various libraries in order
 # to compile pieces of it, but is OS dependent and we can't list all
@@ -9,9 +8,9 @@
 
 CC=gcc
 
-OBJS1=snmpdemoapp.o
-OBJS2=example-demon.o nstAgentSubagentObject.o
-OBJS3=asyncapp.o
+#OBJS1=snmpdemoapp.o
+#OBJS2=example-demon.o nstAgentSubagentObject.o
+#OBJS3=asyncapp.o
 OBJS4=app1.o
 TARGETS=example-demon snmpdemoapp asyncapp app1
 
