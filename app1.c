@@ -7,7 +7,8 @@
 netsnmp_session session, *ss; // holds connection info.
 netsnmp_pdu *response; // holds info. that the remote host sends back
 
-void getNext_pdu(char* desc);
+int getPdu(char* desc);
+void printInter();
 
 int main(int argc, char ** argv) {
     char* mibVar[25];
@@ -49,15 +50,15 @@ int main(int argc, char ** argv) {
     // call PDU getNext Creation
     //mibVar = "hrSystemUptime.0";
     printf("The Current System Uptime is:\n");
-    getNext_pdu("hrSystemUptime.0");
+    getPdu("hrSystemUptime.0");
+    print_variable(response->variables->name, response->variables->name_length, response->variables);
+
 
     printf("The Agent's System Description is:\n");
-    getNext_pdu("sysDescr.0");
+    getPdu("sysDescr.0");
+    print_variable(response->variables->name, response->variables->name_length, response->variables);
 
-    printf("\n\nDEBUG: TESTING\n");
-    getNext_pdu("ifType.1");
-    getNext_pdu("ifType.2");
-    getNext_pdu("ifType.2");
+    printInter();
 
     //TODO - Function repeat the above command until a repeat is found, then display a count and values.
 
@@ -71,7 +72,7 @@ int main(int argc, char ** argv) {
 } /* main() */
 
 
-void getNext_pdu(char* desc){
+int getPdu(char* desc){
 
     netsnmp_pdu *pdu; // Protocol Data unit - holds info to send to remote host
     oid anOID[MAX_OID_LEN]; // OID for the info we want from the remote host Size: 'MAX_OID_LEN'
@@ -120,8 +121,18 @@ void getNext_pdu(char* desc){
        */
 
        
-      for(vars = response->variables; vars; vars = vars->next_variable)
-        print_variable(vars->name, vars->name_length, vars);
+      /*for(vars = response->variables; vars; vars = vars->next_variable)
+        print_variable(vars->name, vars->name_length, vars);*/
+
+      //DEBUG
+       /*
+      printf("DEBUG: NAME print: %d\n", response->variables->name);
+
+      print_variable(response->variables->name, response->variables->name_length, response->variables);
+
+      printf("DEBUG: String print: %s\n", response->variables->val.string);
+      printf("DEBUG: Decimal print: %d\n", *response->variables->val.integer);
+      */
 
       // Might be able to get value from using response->variables->val->integer/string
       // val(net_snmpvardata), val_len, type, name
@@ -129,7 +140,7 @@ void getNext_pdu(char* desc){
       //container to hold part of the previous reponse would be helpful to know if a dupe exists
 
 
-      /* Start Manipulating the information ourselves */
+      /* Start Manipulating the information ourselves 
       for(vars = response->variables; vars; vars = vars->next_variable) {
 
         if (vars->type == ASN_OCTET_STR) {
@@ -142,31 +153,58 @@ void getNext_pdu(char* desc){
         else
           printf("value #%d is NOT a string! Ack!\n", count++);
       }
-      /* Finished Manipulating the information */
+
+
+       Finished Manipulating the information */
 
     } else {
       /*
        * FAILURE: print what went wrong!
        */
 
-      if (status == STAT_SUCCESS)
-        fprintf(stderr, "Error in packet\nReason: %s\n",
-                snmp_errstring(response->errstat));
-      else if (status == STAT_TIMEOUT)
-        fprintf(stderr, "Timeout: No response from %s.\n",
-                session.peername);
+      if (status == STAT_SUCCESS){
+        fprintf(stderr, "DEBUG:: Error in packet\nReason: %s\n", snmp_errstring(response->errstat));
+        return -1;
+      }
+      else if (status == STAT_TIMEOUT){
+
+        fprintf(stderr, "Timeout: No response from %s.\n", session.peername);
+        return -2;
+      }
       else
         snmp_sess_perror("snmpdemoapp", ss);
 
     }
 
-    
+    return 1;
 
     /*
-     * Clean up Response
+     * Clean up Response (TURNED OFF SO WE CAN USE THE RESPONSE LATER)
      */
-    if (response) //(1)
-      snmp_free_pdu(response);
+    //if (response) //(1)
+    //  snmp_free_pdu(response);
 
     // END the CREATE SNMPGET PDU Function
+}
+
+void printInter(){
+
+  char rD[] = "ifType.1";
+  int count = 49; //Start at 1 (ASCII)
+
+  printf("\n*****INTERFACE LIST:*****\n\n");
+
+
+  while(getPdu(rD) == 1){
+    printf("INTERFACE %d:\n", count-48);
+    print_variable(response->variables->name, response->variables->name_length, response->variables);
+    snmp_free_pdu(response);
+
+    count++;
+    rD[7]=count;
+  } 
+
+  printf("\n");
+
+
 }
