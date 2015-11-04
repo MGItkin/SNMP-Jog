@@ -14,10 +14,6 @@ int main(int argc, char ** argv) {
     char* mibVar[25];
 
     printf("CS 158B Assignment#2  (Mason & Kenny):\n\n");    
-
-    /*
-     * Initialize the SNMP library
-     */
     init_snmp("snmpdemoapp");
 
     /*
@@ -26,9 +22,7 @@ int main(int argc, char ** argv) {
     printf("Init Session with peer: Localhost...\n\n");
     snmp_sess_init( &session );                   /* set up defaults */
     session.peername = strdup("localhost");
-    // 127.0.0.1:161
 
-    /* set up the authentication parameters for talking to the server */
     /* set the SNMP version number */
     session.version = SNMP_VERSION_1;
 
@@ -39,7 +33,7 @@ int main(int argc, char ** argv) {
     /*
      * Open the session
      */
-    ss = snmp_open(&session);                     /* establish the session */
+    ss = snmp_open(&session);
  
     // If session open fails
     if (!ss) { 
@@ -87,22 +81,7 @@ int getPdu(char* desc){
      *   1) We're going to GET the system.sysDescr.0 node.
      */
     pdu = snmp_pdu_create(SNMP_MSG_GET); // Using pdu create function and Type of SNMP_MSG_GET
-    
-/*
-    // Option-1: Manually give the full qualified OID to 'anOID' and check if fails
-
-    if (!snmp_parse_oid(".1.3.6.1.2.1.1.1.0", anOID, &anOID_len)) { 
-      snmp_perror(".1.3.6.1.2.1.1.1.0");
-      exit(1); 
-    } */
-
-    // Option-2: Same as above but with no eror checking
-    // read_objid(".1.3.6.1.2.1.1.1.0", anOID, &anOID_len); // put request OID in 'anOID' var
-    
-    // Option-3: transform text-identifier to a fully qualified OID to reference that data
     get_node(desc, anOID, &anOID_len); 
-    
-
     snmp_add_null_var(pdu, anOID, anOID_len); // Adds the now properly formatted OID to the PDU with a NULL value
   
     /*
@@ -110,53 +89,11 @@ int getPdu(char* desc){
      */
     status = snmp_synch_response(ss, pdu, &response);
 
-    
-
     /*
      * Process the response.
      */
     if (status == STAT_SUCCESS && response->errstat == SNMP_ERR_NOERROR) { 
-      /*
-       * SUCCESS: Print the result variables (Only 1 for now)
-       */
-
-       
-      /*for(vars = response->variables; vars; vars = vars->next_variable)
-        print_variable(vars->name, vars->name_length, vars);*/
-
-      //DEBUG
-       /*
-      printf("DEBUG: NAME print: %d\n", response->variables->name);
-
-      print_variable(response->variables->name, response->variables->name_length, response->variables);
-
-      printf("DEBUG: String print: %s\n", response->variables->val.string);
-      printf("DEBUG: Decimal print: %d\n", *response->variables->val.integer);
-      */
-
-      // Might be able to get value from using response->variables->val->integer/string
-      // val(net_snmpvardata), val_len, type, name
-
-      //container to hold part of the previous reponse would be helpful to know if a dupe exists
-
-
-      /* Start Manipulating the information ourselves 
-      for(vars = response->variables; vars; vars = vars->next_variable) {
-
-        if (vars->type == ASN_OCTET_STR) {
-      char *sp = (char *)malloc(1 + vars->val_len);
-      memcpy(sp, vars->val.string, vars->val_len);
-      sp[vars->val_len] = '\0';
-          printf("value #%d is a string: %s\n", count++, sp);
-      free(sp);
-    }
-        else
-          printf("value #%d is NOT a string! Ack!\n", count++);
-      }
-
-
-       Finished Manipulating the information */
-
+       // SUCCESS: Print the result variables (Only 1 for now)
     } else {
       /*
        * FAILURE: print what went wrong!
@@ -177,15 +114,7 @@ int getPdu(char* desc){
     }
 
     return 1;
-
-    /*
-     * Clean up Response (TURNED OFF SO WE CAN USE THE RESPONSE LATER)
-     */
-    //if (response) //(1)
-    //  snmp_free_pdu(response);
-
-    // END the CREATE SNMPGET PDU Function
-}
+}    // END the CREATE SNMPGET PDU Function
 
 void printInter(){
 
@@ -197,7 +126,8 @@ void printInter(){
 
   while(getPdu(rD) == 1){
     printf("INTERFACE %d:\n", count-48);
-    print_variable(response->variables->name, response->variables->name_length, response->variables);
+    print_variable(response->variables->name, response->variables->name_length, 
+            response->variables);
     snmp_free_pdu(response);
 
     count++;
@@ -205,6 +135,4 @@ void printInter(){
   } 
 
   printf("\n");
-
-
 }
