@@ -7,7 +7,7 @@
 netsnmp_session session, *ss; // holds connection info.
 netsnmp_pdu *response; // holds info. that the remote host sends back
 
-int getNext_pdu(char* desc);
+int getPdu(char* desc);
 void printInter();
 
 int main(int argc, char ** argv) {
@@ -50,12 +50,12 @@ int main(int argc, char ** argv) {
     // call PDU getNext Creation
     //mibVar = "hrSystemUptime.0";
     printf("The Current System Uptime is:\n");
-    getNext_pdu("hrSystemUptime.0");
+    getPdu("hrSystemUptime.0");
     print_variable(response->variables->name, response->variables->name_length, response->variables);
 
 
     printf("The Agent's System Description is:\n");
-    getNext_pdu("sysDescr.0");
+    getPdu("sysDescr.0");
     print_variable(response->variables->name, response->variables->name_length, response->variables);
 
     printInter();
@@ -72,7 +72,7 @@ int main(int argc, char ** argv) {
 } /* main() */
 
 
-int getNext_pdu(char* desc){
+int getPdu(char* desc){
 
     netsnmp_pdu *pdu; // Protocol Data unit - holds info to send to remote host
     oid anOID[MAX_OID_LEN]; // OID for the info we want from the remote host Size: 'MAX_OID_LEN'
@@ -190,14 +190,12 @@ int getNext_pdu(char* desc){
 void printInter(){
 
   char rD[] = "ifType.1";
-  int lastID = 0;
-  int newID = 1;
   int count = 49; //Start at 1 (ASCII)
 
   printf("\n*****INTERFACE LIST:*****\n\n");
 
 
-  while(getNext_pdu(rD) == 1){
+  while(getPdu(rD) == 1){
     printf("INTERFACE %d:\n", count-48);
     print_variable(response->variables->name, response->variables->name_length, response->variables);
     snmp_free_pdu(response);
