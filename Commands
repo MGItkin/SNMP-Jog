@@ -13,3 +13,6 @@ snmpwalk -v 1 -c public localhost | grep -i ipNetToMediaPhysAddress
 
 Interface Speed
 snmpwalk -v 1 -c public localhost | grep -i ifHighSpeed
+
+Actual commands that we are sending (example):
+snmpget -v 1 -c public localhost ifType.1
