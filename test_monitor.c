@@ -1,18 +1,30 @@
+/* test_monitor.c
+ * Kenneth Cross
+ * Mason Itkin
+ *
+ */
+
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "app1.c"
+#include "SNMP_jog.c"
+
 //#include "monitor.c"
 // All the monitor helper functions go in the monitor.c file
+
+// Globals for Session and Response
+netsnmp_session session, *ss; // holds connection info.
+netsnmp_pdu *response; // holds info. that the remote host sends back
 
 int main(int argc, char *argv[]){
   int seconds, samples;
   char *community, *hostIP;
 
   if (argc < 4){
+    printf("\n##########USING DEFAULTS#############\n\n");
     seconds = 500;
     samples = 30;
     community = "public";
@@ -38,6 +50,9 @@ int main(int argc, char *argv[]){
   session.community = "public";
   session.community_len = strlen(session.community);
 
+  // initalize variables in SNMP-jog
+  init_session(session, ss, response);
+
    // Open the session
   ss = snmp_open(&session);
   if (!ss) { 
@@ -49,7 +64,7 @@ int main(int argc, char *argv[]){
   printf("The Agent's System Description is:\n");
   getPdu("sysDescr.0");
 
-  printInter();
+  //printInter();
 
   /* 
    * The key is to next grab all the objects and store them

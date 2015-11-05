@@ -1,0 +1,111 @@
+// DOCUMENTING THE REMOVALS FOR REFERENCE
+
+// Globals for Session and Response
+/*
+netsnmp_session session, *ss; // holds connection info.
+netsnmp_pdu *response; // holds info. that the remote host sends back
+
+int getPdu(char* desc);
+int getNextPdu(char* desc);
+int getNextPdu_oid(oid* lastOID, size_t lastOID_len); // call getNext with an already formatted OID
+void printInter();
+*/
+
+//int main(int argc, char ** argv) {
+//    char* mibVar[25];
+//
+//    printf("\n\n------ CS 158B Assignment#2  (Mason & Kenny) ------\n\n");    
+//
+//    /*
+//     * Initialize the SNMP library
+//     */
+//    init_snmp("snmpdemoapp");
+//
+//    /*
+//     * Initialize a "session" that defines who we're going to talk to
+//     */
+//    printf("Init Session with peer: Localhost...\n\n");
+//    snmp_sess_init( &session );                   /* set up defaults */
+//    session.peername = strdup("localhost");
+//    // 127.0.0.1:161
+//
+//    /* set up the authentication parameters for talking to the server */
+//    /* set the SNMP version number */
+//    session.version = SNMP_VERSION_1;
+//
+//    /* set the SNMPv1 community name used for authentication (NOT SECURE) */
+//    session.community = "public";
+//    session.community_len = strlen(session.community);
+//
+//    /*
+//     * Open the session
+//     */
+//    ss = snmp_open(&session);                     /* establish the session */
+// 
+//    // If session open fails
+//    if (!ss) { 
+//      snmp_sess_perror("ack", &session);
+//      exit(1);
+//    }   
+//
+//    // call a SNMP get function with getPDU
+//    //mibVar = "hrSystemUptime.0";
+//    printf("The Current System Uptime is:\n");
+//    getPdu("hrSystemUptime.0");
+//    print_variable(response->variables->name, response->variables->name_length, response->variables);
+//
+//
+//    printf("\nThe Agent's System Description is:\n");
+//    getPdu("sysDescr.0");
+//    print_variable(response->variables->name, response->variables->name_length, response->variables);
+//
+//    printInter(); // Print information about the Agent's interfaaces
+//
+//
+//    // Close the Session
+//    snmp_close(ss); // (2)
+//
+//    return (0);
+//}
+
+
+
+//GetPDU()
+       
+      /*for(vars = response->variables; vars; vars = vars->next_variable)
+        print_variable(vars->name, vars->name_length, vars);*/
+
+      //DEBUG
+       /*
+      printf("DEBUG: NAME print: %d\n", response->variables->name);
+
+      print_variable(response->variables->name, response->variables->name_length, response->variables);
+
+      printf("DEBUG: String print: %s\n", response->variables->val.string);
+      printf("DEBUG: Decimal print: %d\n", *response->variables->val.integer);
+      */
+
+      // Might be able to get value from using response->variables->val->integer/string
+      // val(net_snmpvardata), val_len, type, name
+
+      //container to hold part of the previous reponse would be helpful to know if a dupe exists
+
+
+      /* Start Manipulating the information ourselves 
+      for(vars = response->variables; vars; vars = vars->next_variable) {
+
+        if (vars->type == ASN_OCTET_STR) {
+      char *sp = (char *)malloc(1 + vars->val_len);
+      memcpy(sp, vars->val.string, vars->val_len);
+      sp[vars->val_len] = '\0';
+          printf("value #%d is a string: %s\n", count++, sp);
+      free(sp);
+    }
+        else
+          printf("value #%d is NOT a string! Ack!\n", count++);
+      }
+
+
+       Finished Manipulating the information */
+
+
