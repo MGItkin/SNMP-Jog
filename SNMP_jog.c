@@ -13,6 +13,12 @@
 netsnmp_session session, *ss; // holds connection info.
 netsnmp_pdu *response; // holds info. that the remote host sends back
 
+// Functions
+int getPdu(char* desc);
+int getNextPdu(char* desc);
+int getNextPdu_oid(oid* lastOID, size_t lastOID_len); // call getNext with formatted OID
+void printInter();
+
 void init_session(netsnmp_session ses, netsnmp_session *sesp, netsnmp_pdu *rep){
     session = ses;
     ss = sesp;

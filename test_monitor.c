@@ -21,33 +21,33 @@ netsnmp_pdu *response; // holds info. that the remote host sends back
 
 int main(int argc, char *argv[]){
   int seconds, samples;
-  char *community, *hostIP;
+  char *community, *monitor_ip;
+  char* mibVar[25];
 
   if (argc < 4){
     printf("\n##########USING DEFAULTS#############\n\n");
     seconds = 500;
     samples = 30;
     community = "public";
-    hostIP = "127.0.0.1";
+    monitor_ip = "127.0.0.1";
   } else{
-    seconds = (int)argv[0]; //How do i cast?
-    samples = (int)argv[1];
-    community = argv[2];
-    hostIP = argv[3];
+    seconds = atoi(argv[1]);
+    samples = atoi(argv[2]);
+    community = argv[3];
+    monitor_ip = argv[4];
   }
 
+  //test statement
   printf("%s %d\n", community, samples);
-
-  char* mibVar[25];
 
   init_snmp("test_monitor");
 
   // Initialize a "session" that defines who we're going to talk to
   snmp_sess_init( &session );
-  session.peername = strdup("localhost");
+  session.peername = strdup(monitor_ip);
 
   session.version = SNMP_VERSION_1;
-  session.community = "public";
+  session.community = community;
   session.community_len = strlen(session.community);
 
   // initalize variables in SNMP-jog
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]){
   printf("The Agent's System Description is:\n");
   getPdu("sysDescr.0");
 
-  //printInter();
+  printInter();
 
   /* 
    * The key is to next grab all the objects and store them

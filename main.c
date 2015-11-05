@@ -15,23 +15,22 @@ netsnmp_session session, *ss; // holds connection info.
 netsnmp_pdu *response; // holds info. that the remote host sends back
 
 int main(int argc, char ** argv) {
-    int seconds, samples;
-    char *community, *hostIP;
-    char* mibVar[25];
-  
-    if (argc < 4){
-      printf("\n##########USING DEFAULTS#############\n\n");
-      seconds = 500;
-      samples = 30;
-      community = "public";
-      hostIP = "127.0.0.1";
-    } else{
-      seconds = (int)argv[0]; //How do i cast?
-      samples = (int)argv[1];
-      community = argv[2];
-      hostIP = argv[3];
-    }
+  int seconds, samples;
+  char *community, *monitor_ip;
+  char* mibVar[25];
 
+  if (argc < 4){
+    printf("\n##########USING DEFAULTS#############\n\n");
+    seconds = 500;
+    samples = 30;
+    community = "public";
+    monitor_ip = "127.0.0.1";
+  } else{
+    seconds = atoi(argv[1]);
+    samples = atoi(argv[2]);
+    community = argv[3];
+    monitor_ip = argv[4];
+  }
 
     printf("\n\n------ CS 158B Assignment#2  (Mason & Kenny) ------\n\n");    
     printf("Init Session with peer: Localhost...\n\n");
