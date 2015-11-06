@@ -51,8 +51,7 @@ int getPdu(char* desc){
     } else {
        // FAILURE: print what went wrong!
       if (status == STAT_SUCCESS){
-        fprintf(stderr, "DEBUG:: Error in packet\nReason: %s\n", 
-                snmp_errstring(response->errstat));
+        //fprintf(stderr, "DEBUG:: Error in packet\nReason: %s\n", snmp_errstring(response->errstat));
         return -1;
       }
       else if (status == STAT_TIMEOUT){
