@@ -170,7 +170,7 @@ void printInter(){
     printf("\n");
     snmp_free_pdu(response);
     count++;
-    rD[7]=count;
+    rD[7]=count; // What if this has more than 9 interfaces?
   }
 
   // back to int values

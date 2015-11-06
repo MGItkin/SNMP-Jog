@@ -10,9 +10,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "SNMP_jog.c"
 
-//#include "monitor.c"
+#include "SNMP_jog.c"
+#include "monitor.c"
 // All the monitor helper functions go in the monitor.c file
 
 // Globals for Session and Response
@@ -24,10 +24,10 @@ int main(int argc, char *argv[]){
   char *community, *monitor_ip;
   char* mibVar[25];
 
-  if (argc < 4){
+  if (argc < 5){
     printf("\n##########USING DEFAULTS#############\n\n");
-    seconds = 500;
-    samples = 30;
+    seconds = 5;
+    samples = 2;
     community = "public";
     monitor_ip = "127.0.0.1";
   } else{
@@ -37,12 +37,8 @@ int main(int argc, char *argv[]){
     monitor_ip = argv[4];
   }
 
-  //test statement
-  printf("%s %d\n", community, samples);
-
+  //initializations
   init_snmp("test_monitor");
-
-  // Initialize a "session" that defines who we're going to talk to
   snmp_sess_init( &session );
   session.peername = strdup(monitor_ip);
 
@@ -52,15 +48,15 @@ int main(int argc, char *argv[]){
 
   // initalize variables in SNMP-jog
   init_session(session, ss, response);
+  init_session_monitor(session, ss, response);
 
-   // Open the session
+  // Open the session
   ss = snmp_open(&session);
   if (!ss) { 
     snmp_sess_perror("Failed to open session", &session);
     exit(1);
   }   
 
-  //print_variable(response->variables->name, response->variables->name_length, response->variables); //an alternative way to print info
   printf("The Agent's System Description is:\n");
   getPdu("sysDescr.0");
 
@@ -70,6 +66,11 @@ int main(int argc, char *argv[]){
    * The key is to next grab all the objects and store them
    * in order to poll continuously
    */
+
+  // a few tests on monitor.c
+  monitor(seconds, samples);  
+  printf("\n\n lucky number %d \n", get_int_object("ifNumber.0"));
+  printf("\n\n lucky number %d \n", get_int_object("ifOutOctets.1"));
 
   // Close the Session
   snmp_close(ss); // (2)

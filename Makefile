@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc -std=c11
 
 TARGETS=SNMP_jog monitor_tester
 
