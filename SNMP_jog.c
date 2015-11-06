@@ -154,24 +154,26 @@ int getNextPdu_oid(oid* lastOID, size_t lastOID_len){
 } // getNextPdu_oid()
 
 void printInter(){
+
+netsnmp_ds_set_boolean(NETSNMP_DS_LIBRARY_ID, NETSNMP_DS_LIB_QUICK_PRINT, 1);
+netsnmp_ds_set_boolean(NETSNMP_DS_LIBRARY_ID, NETSNMP_DS_LIB_PRINT_BARE_VALUE, 1);
+
   char rD[] = "ifType.1";
   int count = 49; //Start at 1 (ASCII)
   int temp =0;
   int loopbackIf = -1;
 
-  printf("\n*****INTERFACE LIST:*****\n\n");
+  printf("\n*********INTERFACE LIST:*********\n");
 
   while(getPdu(rD) == 1){
-    printf("**INTERFACE %d:**\n", count-48);
+    printf("Interface %d: | ", count-48);
 
-    print_variable(response->variables->name, response->variables->name_length, 
-            response->variables);
-
-    printf("\n");
+    print_variable(response->variables->name, response->variables->name_length, response->variables);
     snmp_free_pdu(response);
     count++;
-    rD[7]=count; // What if this has more than 9 interfaces?
+    rD[7]=count;
   }
+  printf("*********************************\n");
 
   // back to int values
   count = count - 48;
@@ -179,37 +181,45 @@ void printInter(){
 
   getNextPdu("ipAdEntAddr");
 
+  printf("\n*********IP OF INTERFACE*********\n");
   for(temp; temp < count; temp++){
-    printf("\n**IP of Interface **%d: \n", temp);
-    print_variable(response->variables->name, response->variables->name_length, 
-            response->variables);
+    printf("Interface %d: | ", temp);
+    print_variable(response->variables->name, response->variables->name_length, response->variables);
 
     if(*response->variables->val.bitstring == 127){
       loopbackIf = temp;
     }
 
     getNextPdu_oid(response->variables->name, response->variables->name_length);
+
   }
+  printf("*********************************\n");
 
   temp = 1;
 
   getNextPdu("ipNetToMediaNetAddress");
 
+  printf("\n*********INTERFACE IP NEIGHBORS*********\n");
   for(temp; temp < count; temp++){
-    printf("\n**Neighborig IP for Interface %d:**\n", temp);
+
+    printf("Interface %d: | ", temp);
 
     if(loopbackIf != temp && *response->variables->val.bitstring == 192){
       while(*response->variables->val.bitstring == 192){
-        print_variable(response->variables->name, response->variables->name_length, 
-                response->variables);
+        print_variable(response->variables->name, response->variables->name_length, response->variables);
         getNextPdu_oid(response->variables->name, response->variables->name_length);
       }
     }
+      
     else
-      printf("No IP neighbors for the local loopback adapter...\n");
+      printf("No IP neighbors for the\n             | local loopback adapter...\n");
 
     getNextPdu_oid(response->variables->name, response->variables->name_length);
-  }
 
-  printf("\n*****END INTERFACE LIST:*****\n\n");
-} // printInter()
+  }
+  printf("****************************************\n");
+
+  printf("\n");
+
+
+}
