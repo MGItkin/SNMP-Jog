@@ -212,7 +212,8 @@ netsnmp_ds_set_boolean(NETSNMP_DS_LIBRARY_ID, NETSNMP_DS_LIB_PRINT_BARE_VALUE, 1
     }
       
     else
-      printf("No IP neighbors for the\n             | local loopback adapter...\n");
+      printf("No IP neighbors for the\n",
+        "             | local loopback adapter...\n");
 
     getNextPdu_oid(response->variables->name, response->variables->name_length);
 

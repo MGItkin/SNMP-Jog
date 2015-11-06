@@ -19,6 +19,10 @@ int main(int argc, char ** argv) {
   char *community, *monitor_ip;
   char* mibVar[25];
 
+  // Setting flags in the net-snmp library to change the way that print_varaible() prints
+  netsnmp_ds_set_boolean(NETSNMP_DS_LIBRARY_ID, NETSNMP_DS_LIB_QUICK_PRINT, 1);
+  netsnmp_ds_set_boolean(NETSNMP_DS_LIBRARY_ID, NETSNMP_DS_LIB_PRINT_BARE_VALUE, 1);
+
   if (argc < 4){
     printf("\n##########USING DEFAULTS#############\n\n");
     seconds = 500;
